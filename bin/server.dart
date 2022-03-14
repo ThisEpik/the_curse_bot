@@ -13,7 +13,10 @@ Future<void> main() async {
   TeleDart teledart = TeleDart(token, Event(username!));
 
   teledart.start();
-  teledart.onCommand().listen((event) {});
+  teledart.onCommand().listen((event) {
+    event.reply(
+        'Дарова, я знойный Валера, у меня горят трубы и глотка. Мне грустно и одиноко, напиши что-то, давай просто поговорим по душам.');
+  });
   teledart.onMessage().listen((event) async {
     String answer = await getAnswer(event.text!);
     event.reply(answer);
