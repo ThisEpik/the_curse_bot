@@ -35,11 +35,16 @@ Future<String> getAnswer(String inputString) async {
 
   String newAnswer = '';
   String url = 'https://pelevin.gpt.dobro.ai/generate/';
-  Response response = await http.post(Uri.parse(url),
-      body: jsonEncode({"prompt": newWord, "length": 50}));
-  dynamic responseBody = await json.decode(utf8.decode(response.bodyBytes));
-  for (var el in responseBody['replies']) {
-    newAnswer += await el;
+  try {
+    Response response = await http.post(Uri.parse(url),
+        body: jsonEncode({"prompt": newWord, "length": 50}));
+    dynamic responseBody = await json.decode(utf8.decode(response.bodyBytes));
+    for (var el in responseBody['replies']) {
+      newAnswer += await el;
+    }
+  } catch (e) {
+    print(e);
   }
+
   return newAnswer;
 }
