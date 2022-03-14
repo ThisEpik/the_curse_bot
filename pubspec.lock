@@ -134,6 +134,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.6.4"
+  json_annotation:
+    dependency: transitive
+    description:
+      name: json_annotation
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "4.4.0"
   lints:
     dependency: "direct dev"
     description:
@@ -281,6 +288,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.1.0"
+  teledart:
+    dependency: "direct main"
+    description:
+      name: teledart
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.3.4"
   term_glyph:
     dependency: transitive
     description:

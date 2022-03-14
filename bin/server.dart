@@ -1,32 +1,42 @@
-import 'dart:io';
+import 'dart:convert';
+import 'dart:math';
+import 'package:http/http.dart';
+import 'package:teledart/teledart.dart';
+import 'package:teledart/telegram.dart';
+import 'package:http/http.dart' as http;
 
-import 'package:shelf/shelf.dart';
-import 'package:shelf/shelf_io.dart';
-import 'package:shelf_router/shelf_router.dart';
+import 'corrupt_words.dart';
 
-// Configure routes.
-final _router = Router()
-  ..get('/', _rootHandler)
-  ..get('/echo/<message>', _echoHandler);
+Future<void> main() async {
+  String token = '5128336474:AAEPgkJed-zdMrgC8Snz031EzYWmt56rDOQ';
+  String? username = (await Telegram(token).getMe()).username;
+  TeleDart teledart = TeleDart(token, Event(username!));
 
-Response _rootHandler(Request req) {
-  return Response.ok('Hello, World!\n');
+  teledart.start();
+  teledart.onCommand().listen((event) {});
+  teledart.onMessage().listen((event) async {
+    String answer = await getAnswer(event.text!);
+    event.reply(answer);
+  });
 }
 
-Response _echoHandler(Request request) {
-  final message = params(request, 'message');
-  return Response.ok('$message\n');
-}
+Future<String> getAnswer(String inputString) async {
+  String newWord = inputString +
+      ' ' +
+      corruptWords[Random().nextInt(corruptWords.length)] +
+      ' ' +
+      corruptWords[Random().nextInt(corruptWords.length)] +
+      ' ' +
+      corruptWords[Random().nextInt(corruptWords.length)] +
+      '.';
 
-void main(List<String> args) async {
-  // Use any available host or container IP (usually `0.0.0.0`).
-  final ip = InternetAddress.anyIPv4;
-
-  // Configure a pipeline that logs requests.
-  final _handler = Pipeline().addMiddleware(logRequests()).addHandler(_router);
-
-  // For running in containers, we respect the PORT environment variable.
-  final port = int.parse(Platform.environment['PORT'] ?? '8080');
-  final server = await serve(_handler, ip, port);
-  print('Server listening on port ${server.port}');
+  String newAnswer = '';
+  String url = 'https://pelevin.gpt.dobro.ai/generate/';
+  Response response = await http.post(Uri.parse(url),
+      body: jsonEncode({"prompt": newWord, "length": 50}));
+  dynamic responseBody = await json.decode(utf8.decode(response.bodyBytes));
+  for (var el in responseBody['replies']) {
+    newAnswer += await el;
+  }
+  return newAnswer;
 }
